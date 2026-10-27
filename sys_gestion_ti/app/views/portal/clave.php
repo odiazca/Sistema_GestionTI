@@ -1,0 +1,4 @@
+<div class="page-head"><div><h1>Cambiar contraseña</h1></div></div>
+<form method="post" class="form-ui"><?= csrf_field() ?><div class="card-ui" style="max-width:480px"><div class="mb-3"><label class="lbl">Contraseña actual</label><input type="password" class="form-control" name="actual" required autocomplete="current-password"></div>
+<div class="mb-3"><label class="lbl">Nueva contraseña</label><input type="password" class="form-control" name="nueva" required minlength="8" autocomplete="new-password"><div class="help">Mínimo 8 caracteres, con letras y números.</div></div>
+<div class="mb-3"><label class="lbl">Repetir nueva contraseña</label><input type="password" class="form-control" name="repetir" required autocomplete="new-password"></div><button class="btn btn-brand">Guardar</button></div></form>

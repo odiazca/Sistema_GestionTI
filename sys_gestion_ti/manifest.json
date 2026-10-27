@@ -1,0 +1,21 @@
+{
+  "name": "TechDesk Pro · Soporte TI",
+  "short_name": "TechDesk",
+  "description": "Gestión de soporte TI: visitas, órdenes y tickets en campo.",
+  "start_url": "jornada?utm=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1437",
+  "theme_color": "#0b1437",
+  "lang": "es",
+  "icons": [
+    {"src": "assets/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "assets/img/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Mi jornada", "url": "jornada"},
+    {"name": "Tickets", "url": "tickets"}
+  ]
+}

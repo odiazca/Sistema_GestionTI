@@ -1,0 +1,59 @@
+==============================================================
+ TECHDESK PRO - Sistema de Gestión de Soporte TI
+ CREDENCIALES DE ACCESO (datos de demostración)
+==============================================================
+
+ IMPORTANTE: cambie estas contraseñas apenas instale el sistema
+ (menú Usuarios y Roles) y elimine los usuarios que no use.
+ Nunca publique este archivo en el servidor web.
+
+--------------------------------------------------------------
+ 1) DIRECCIONES
+--------------------------------------------------------------
+ Local (Laragon) : http://localhost/sys_gestion_ti/
+ Instalador      : http://localhost/sys_gestion_ti/install.php
+ Hosting         : https://sudominio.com/   (borrar install.php y migrar.php luego de instalar)
+
+--------------------------------------------------------------
+ 2) BASE DE DATOS (config/config.php)
+--------------------------------------------------------------
+ Local (Laragon / XAMPP)
+   Servidor   : localhost
+   Puerto     : 3306
+   Base datos : sys_gestion_ti
+   Usuario    : root
+   Contraseña : (vacía)
+
+ Hosting (Hostinger u otro) - usar los datos que cree en su panel
+   Servidor   : localhost
+   Base datos : u123456789_soporte   (ejemplo, con prefijo)
+   Usuario    : u123456789_admin     (ejemplo)
+   Contraseña : la que usted defina
+
+--------------------------------------------------------------
+ 3) USUARIOS DEL SISTEMA
+--------------------------------------------------------------
+ Rol             Usuario        Contraseña
+ -------------   ------------   ------------
+ Administrador   admin          Admin123*
+ Supervisor      lfernandez     Tecnico123*
+ Técnico         cmendoza       Tecnico123*
+ Técnico         aquispe        Tecnico123*
+ Técnico         jsalazar       Tecnico123*
+ Técnico         mtorres        Tecnico123*
+ Cliente (portal) cliente.demo  Cliente123*
+
+ Notas:
+  - El administrador accede a todos los módulos (empresa, respaldo,
+    usuarios, IA, etc.).
+  - El usuario "cliente.demo" entra únicamente al Portal del Cliente.
+  - Para empezar con una empresa nueva: Sistema > Respaldo y
+    Restauración > Reiniciar sistema.
+
+--------------------------------------------------------------
+ 4) RECOMENDACIONES
+--------------------------------------------------------------
+  - Use contraseñas de 12 o más caracteres.
+  - Active HTTPS en el hosting.
+  - Descargue una copia de seguridad cada semana.
+==============================================================

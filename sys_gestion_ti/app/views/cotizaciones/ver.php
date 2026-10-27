@@ -1,0 +1,35 @@
+<?php $st = $q['estado']; $ok = ['borrador' => ['enviada' => ['Marcar como enviada', 'bi-send', 'btn-brand']], 'enviada' => ['aprobada' => ['Aprobada por el cliente', 'bi-check2-circle', 'btn-brand'], 'rechazada' => ['Rechazada', 'bi-x-circle', 'btn-ghost text-danger']], 'vencida' => ['borrador' => ['Reactivar como borrador', 'bi-arrow-counterclockwise', 'btn-ghost']], 'rechazada' => ['borrador' => ['Reabrir como borrador', 'bi-arrow-counterclockwise', 'btn-ghost']]][$st] ?? []; ?>
+<div class="page-head"><div><div class="crumbs"><a href="<?= url('dashboard') ?>">Inicio</a> / <a href="<?= url('cotizaciones') ?>">Cotizaciones</a> / <?= e($q['codigo']) ?></div><h1><?= e($q['codigo']) ?> <?= cot_pill($st) ?></h1>
+  <p><a href="<?= url('clientes/ver/' . $q['cliente_id']) ?>"><?= e($q['cliente']) ?></a><?= $q['op_codigo'] ? ' · <a href="' . url('oportunidades/ver/' . $q['oportunidad_id']) . '">' . e($q['op_codigo']) . '</a>' : '' ?></p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <?php foreach ($ok as $k => $b): ?><form method="post" action="<?= url('cotizaciones/estado/' . $q['id']) ?>"><?= csrf_field() ?><input type="hidden" name="estado" value="<?= $k ?>"><button class="btn <?= $b[2] ?>"><i class="bi <?= $b[1] ?> me-1"></i><?= $b[0] ?></button></form><?php endforeach; ?>
+    <?php if ($st === 'aprobada' && in_array(Auth::user()['rol'], ['Administrador', 'Supervisor'], true)): $fq = null; try { $s_ = Database::conn()->prepare("SELECT id, codigo FROM fac_comprobantes WHERE cotizacion_id=? AND estado<>'anulada' LIMIT 1"); $s_->execute([$q['id']]); $fq = $s_->fetch(); } catch (Throwable $e) {} ?>
+      <?php if ($fq): ?><a class="btn btn-soft" href="<?= url('facturacion/ver/' . $fq['id']) ?>"><i class="bi bi-receipt me-1"></i><?= e($fq['codigo']) ?></a><?php else: ?><a class="btn btn-brand" href="<?= url('facturacion/crear?cotizacion=' . $q['id']) ?>"><i class="bi bi-receipt me-1"></i>Facturar</a><?php endif; ?><?php endif; ?>
+    <?php if ($st === 'aprobada'): $oq = null; try { $s2 = Database::conn()->prepare('SELECT id, codigo FROM ordenes_servicio WHERE cotizacion_id=? LIMIT 1'); $s2->execute([$q['id']]); $oq = $s2->fetch(); } catch (Throwable $e) {} ?>
+      <?php if ($oq): ?><a class="btn btn-soft" href="<?= url('ordenes/ver/' . $oq['id']) ?>"><i class="bi bi-clipboard2-check me-1"></i><?= e($oq['codigo']) ?></a>
+      <?php else: ?><form method="post" action="<?= url('cotizaciones/aorden/' . $q['id']) ?>"><?= csrf_field() ?><button class="btn btn-brand"><i class="bi bi-clipboard2-plus me-1"></i>Crear orden de servicio</button></form><?php endif; endif; ?>
+    <?php require_once ROOT_PATH . '/core/Notifier.php'; $tel = $q['contacto_tel'] ?? $q['cli_tel'] ?? null; $wa = Notifier::waLink($q['cli_tel'], "Hola, le compartimos la cotización {$q['codigo']} por " . money($q['total']) . ". Quedamos atentos a sus comentarios."); ?>
+    <button type="button" class="btn btn-ghost" data-bs-toggle="modal" data-bs-target="#mEnviar"><i class="bi bi-envelope-paper me-1"></i>Enviar por correo</button>
+    <?php if ($wa): ?><a class="btn btn-ghost" target="_blank" rel="noopener" href="<?= e($wa) ?>"><i class="bi bi-whatsapp me-1 text-success"></i>WhatsApp</a><?php endif; ?>
+    <a class="btn btn-ghost" target="_blank" href="<?= url('cotizaciones/imprimir/' . $q['id']) ?>"><i class="bi bi-printer me-1"></i>Imprimir / PDF</a>
+    <?php if (!in_array($st, ['aprobada', 'rechazada'])): ?><a class="btn btn-ghost" href="<?= url('cotizaciones/editar/' . $q['id']) ?>"><i class="bi bi-pencil me-1"></i>Editar</a><?php endif; ?>
+    <form method="post" action="<?= url('cotizaciones/duplicar/' . $q['id']) ?>"><?= csrf_field() ?><button class="btn btn-ghost"><i class="bi bi-copy me-1"></i>Duplicar</button></form>
+    <?php if ($st !== 'aprobada'): ?><form method="post" action="<?= url('cotizaciones/eliminar/' . $q['id']) ?>" onsubmit="return confirm('¿Eliminar la cotización?')"><?= csrf_field() ?><button class="btn btn-ghost text-danger"><i class="bi bi-trash3"></i></button></form><?php endif; ?>
+  </div></div>
+<div class="row g-3"><div class="col-xl-8"><div class="card-ui">
+  <div class="table-responsive"><table class="table-ui"><thead><tr><th>Descripción</th><th class="text-end">Cant.</th><th class="text-end">P. unit.</th><th class="text-end">Importe</th></tr></thead><tbody>
+  <?php foreach ($items as $it): ?><tr><td><?= e($it['descripcion']) ?></td><td class="text-end"><?= rtrim(rtrim(number_format($it['cantidad'], 2), '0'), '.') ?></td><td class="text-end"><?= money($it['precio_unit']) ?></td><td class="text-end fw-semibold"><?= money($it['cantidad'] * $it['precio_unit']) ?></td></tr><?php endforeach; ?></tbody></table></div>
+  <div class="cq-totals ms-auto mt-3" style="max-width:300px"><div><span>Subtotal</span><b><?= money($q['subtotal']) ?></b></div><?php if ($q['descuento'] > 0): ?><div><span>Descuento (<?= (float)$q['descuento_pct'] ?>%)</span><b>− <?= money($q['descuento']) ?></b></div><?php endif; ?><div><span>IGV (<?= (float)$q['igv_pct'] ?>%)</span><b><?= money($q['igv']) ?></b></div><div class="tot"><span>Total</span><b><?= money($q['total']) ?></b></div></div>
+  <?php if ($q['condiciones']): ?><div class="mini-title mt-3">Condiciones</div><p class="small mb-0"><?= nl2br(e($q['condiciones'])) ?></p><?php endif; ?>
+</div></div>
+<div class="col-xl-4"><div class="card-ui"><div class="card-head"><div><h6>Datos</h6></div></div><div class="info-list">
+  <div class="info-item"><span>Emisión</span><b><?= fdate($q['fecha']) ?></b></div><div class="info-item"><span>Válida hasta</span><b class="<?= $st === 'vencida' ? 'text-danger' : '' ?>"><?= fdate($q['valida_hasta']) ?></b></div>
+  <div class="info-item"><span>Contacto</span><b><?= e($q['contacto'] ?: '—') ?></b></div><div class="info-item"><span>Elaborada por</span><b><?= e($q['autor'] ?: '—') ?></b></div></div>
+  <?php if ($q['notas']): ?><div class="mini-title mt-3">Notas internas</div><p class="small mb-0"><?= nl2br(e($q['notas'])) ?></p><?php endif; ?></div></div></div>
+
+<div class="modal fade" id="mEnviar" tabindex="-1"><div class="modal-dialog"><form method="post" action="<?= url('cotizaciones/enviar/' . $q['id']) ?>" class="modal-content form-ui"><?= csrf_field() ?>
+  <div class="modal-header"><h5 class="modal-title">Enviar cotización por correo</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><label class="form-label">Para</label><input type="email" class="form-control mb-3" name="para" required value="<?= e($q['contacto_email'] ?: $q['cli_email']) ?>">
+    <label class="form-label">Mensaje (opcional)</label><textarea class="form-control" name="mensaje" rows="3" placeholder="Adjuntamos nuestra propuesta…"></textarea>
+    <div class="form-text">Si está en borrador, pasará a «Enviada».</div></div>
+  <div class="modal-footer"><button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-brand"><i class="bi bi-send me-1"></i>Enviar</button></div></form></div></div>
